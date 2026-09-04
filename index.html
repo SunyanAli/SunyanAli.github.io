@@ -5,153 +5,257 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sunyan Ali — phone agents for small businesses</title>
 <meta name="description" content="I set up a phone line that answers when you can't, asks the right questions, and books the appointment into your calendar.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#fcfbf9;
-  --ink:#1c1b19;
-  --soft:#5f5c57;
-  --rule:#e3e0da;
-  --link:#1f5c8b;
-  --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
-  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --ink:#15161a;
+  --soft:#565a63;
+  --faint:#83878f;
+  --line:rgba(20,22,28,.09);
+  --glass:rgba(255,255,255,.55);
+  --glass-strong:rgba(255,255,255,.72);
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --r:20px;
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{
-  margin:0;background:var(--paper);color:var(--ink);
-  font-family:var(--sans);font-size:17px;line-height:1.65;
-  -webkit-font-smoothing:antialiased;
+  margin:0;color:var(--ink);font-family:var(--sans);
+  font-size:17px;line-height:1.62;letter-spacing:-.005em;
+  background:#eef0f6;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
 }
-.wrap{max-width:620px;margin:0 auto;padding:0 22px}
-a{color:var(--link)}
-h1,h2{font-family:var(--serif);font-weight:normal;letter-spacing:-.01em}
 
-/* header */
-header{padding:64px 0 8px}
-.who{display:flex;align-items:center;gap:14px;margin-bottom:30px}
-.who img{width:52px;height:52px;border-radius:50%;object-fit:cover;display:block}
-.who .name{font-size:16px;font-weight:600}
-.who .where{font-size:14px;color:var(--soft)}
-h1{font-size:clamp(28px,6vw,38px);line-height:1.25;margin:0 0 20px}
-.intro{font-size:18px;color:var(--soft);margin:0 0 34px}
+/* ---------- backdrop: soft drifting colour, fine grain ---------- */
+.bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:
+  linear-gradient(170deg,#f6f4f1 0%,#eef1f7 45%,#f3eef4 100%)}
+.orb{position:absolute;border-radius:50%;filter:blur(66px);opacity:.68;will-change:transform}
+.orb.a{width:46vw;height:46vw;left:-10vw;top:-12vw;background:#8fbde6;animation:drift1 26s ease-in-out infinite}
+.orb.b{width:40vw;height:40vw;right:-12vw;top:14vh;background:#f2c49b;animation:drift2 32s ease-in-out infinite}
+.orb.c{width:44vw;height:44vw;left:18vw;bottom:-18vw;background:#b9b1e8;animation:drift3 29s ease-in-out infinite}
+@keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(6vw,5vh) scale(1.12)}}
+@keyframes drift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-5vw,7vh) scale(.9)}}
+@keyframes drift3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(4vw,-6vh) scale(1.08)}}
+.grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.32;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='.5'/></svg>")}
 
-/* video */
-.video{display:block;position:relative;aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:#25231f;border:1px solid var(--rule);line-height:0}
+.wrap{max-width:680px;margin:0 auto;padding:0 20px}
+
+/* ---------- glass ---------- */
+.glass{
+  position:relative;border-radius:var(--r);
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.85) inset,
+    0 10px 34px -14px rgba(24,28,44,.30),
+    0 2px 8px -3px rgba(24,28,44,.10);
+  overflow:hidden;
+}
+/* cursor-tracked specular highlight */
+.glass::after{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:0;
+  transition:opacity .35s ease;
+  background:radial-gradient(280px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.75),transparent 65%);
+}
+.glass:hover::after{opacity:1}
+
+/* ---------- sticky bar ---------- */
+.bar{position:sticky;top:14px;z-index:20;margin:14px auto 0;max-width:680px;padding:0 20px}
+.bar-in{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:9px 9px 9px 18px;border-radius:999px;
+}
+.bar .nm{font-weight:600;font-size:15px;letter-spacing:-.01em}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--ink);color:#fff;text-decoration:none;
+  font-size:14px;font-weight:500;padding:9px 16px;border-radius:999px;
+  transition:transform .2s cubic-bezier(.2,.8,.3,1),box-shadow .2s ease;
+  box-shadow:0 6px 16px -8px rgba(20,22,28,.8);
+}
+.pill:hover{transform:translateY(-1px);box-shadow:0 10px 22px -8px rgba(20,22,28,.75)}
+.pill svg{width:15px;height:15px}
+
+/* ---------- hero ---------- */
+header{padding:56px 0 6px}
+.meta{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.meta img{width:46px;height:46px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,.8);box-shadow:0 4px 14px -6px rgba(20,22,28,.5)}
+.meta .n{font-weight:600;font-size:15px;line-height:1.3}
+.meta .w{font-size:13.5px;color:var(--faint);line-height:1.3;letter-spacing:.01em}
+h1{
+  font-family:var(--serif);font-weight:400;
+  font-size:clamp(36px,7.6vw,56px);line-height:1.06;
+  letter-spacing:-.02em;margin:0 0 20px;
+}
+.lede{font-size:18.5px;color:var(--soft);margin:0 0 30px;max-width:33em}
+
+/* ---------- video ---------- */
+.video{display:block;aspect-ratio:16/9;background:#1b1d22;border-radius:var(--r);cursor:pointer;transition:transform .32s cubic-bezier(.2,.8,.3,1)}
+.video:hover{transform:translateY(-3px)}
 .video img{width:100%;height:100%;object-fit:cover;display:block}
-.video .play{
+.play{
   position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   width:66px;height:66px;border-radius:50%;
-  background:rgba(255,255,255,.94);box-shadow:0 2px 14px rgba(0,0,0,.28);
+  background:rgba(255,255,255,.30);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow:0 8px 26px -10px rgba(0,0,0,.6),0 1px 0 rgba(255,255,255,.7) inset;
+  display:grid;place-items:center;
+  transition:transform .28s cubic-bezier(.2,.8,.3,1),background .28s ease;
 }
-.video .play::after{
-  content:"";position:absolute;left:26px;top:21px;
-  border-style:solid;border-width:12px 0 12px 19px;
-  border-color:transparent transparent transparent #1c1b19;
+.play svg{width:22px;height:22px;margin-left:3px;fill:#fff}
+.video:hover .play{transform:translate(-50%,-50%) scale(1.09);background:rgba(255,255,255,.44)}
+.cap{font-size:13.5px;color:var(--faint);margin:11px 2px 0}
+
+/* ---------- sections ---------- */
+section{padding:52px 0 0}
+h2{font-family:var(--serif);font-weight:400;font-size:29px;letter-spacing:-.015em;margin:0 0 22px}
+p{margin:0 0 16px}p:last-child{margin-bottom:0}
+
+.cards{display:grid;gap:12px}
+@media(min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+.card{padding:22px;transition:transform .32s cubic-bezier(.2,.8,.3,1),box-shadow .32s ease}
+.card:hover{transform:translateY(-3px);box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 18px 40px -18px rgba(24,28,44,.38),0 3px 10px -4px rgba(24,28,44,.12)}
+.ico{
+  width:36px;height:36px;border-radius:11px;display:grid;place-items:center;margin-bottom:13px;
+  background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.8);
+  box-shadow:0 2px 8px -4px rgba(20,22,28,.35)
 }
-.video:hover .play{background:#fff}
-.cap{font-size:14px;color:var(--soft);margin:10px 0 0}
+.ico svg{width:19px;height:19px;stroke:var(--ink);stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.card h3{font-size:16px;font-weight:600;margin:0 0 5px;letter-spacing:-.01em}
+.card p{font-size:15px;color:var(--soft);margin:0}
 
-section{padding:44px 0;border-top:1px solid var(--rule);margin-top:44px}
-h2{font-size:22px;margin:0 0 20px}
-p{margin:0 0 18px}
-p:last-child{margin-bottom:0}
+.panel{padding:28px}
+.panel p{color:var(--soft)}
+.panel p b,.panel p strong{color:var(--ink);font-weight:600}
 
-/* steps */
-.step{margin-bottom:26px}
-.step:last-child{margin-bottom:0}
-.step h3{font-size:17px;margin:0 0 4px;font-weight:600}
-.step p{color:var(--soft);margin:0}
+.cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:22px}
+.mail{font-size:15px;color:var(--faint);text-decoration:none;border-bottom:1px solid var(--line)}
+.mail:hover{color:var(--ink)}
 
-.note{background:#f4f2ee;border:1px solid var(--rule);border-radius:6px;padding:20px 22px}
-.note p{color:var(--soft);font-size:16px}
-.note b{color:var(--ink)}
+footer{padding:52px 0 60px;margin-top:52px;font-size:13.5px;color:var(--faint);text-align:center}
+footer a{color:var(--faint)}
 
-.btn{
-  display:inline-block;background:var(--ink);color:var(--paper);
-  text-decoration:none;padding:13px 24px;border-radius:5px;
-  font-size:16px;font-weight:500
+/* ---------- scroll reveal ---------- */
+.rise{opacity:0;transform:translateY(16px);transition:opacity .7s cubic-bezier(.2,.8,.3,1),transform .7s cubic-bezier(.2,.8,.3,1)}
+.rise.in{opacity:1;transform:none}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .rise{opacity:1;transform:none}
+  html{scroll-behavior:auto}
 }
-.mail{font-size:16px;margin-top:18px}
-
-footer{padding:34px 0 64px;border-top:1px solid var(--rule);margin-top:44px;font-size:14px;color:var(--soft)}
-footer a{color:var(--soft)}
 </style>
 </head>
 <body>
 
+<div class="bg"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div></div>
+<div class="grain"></div>
+
+<div class="bar">
+  <div class="bar-in glass">
+    <span class="nm">Sunyan Ali</span>
+    <a class="pill" href="mailto:sunyanali566@gmail.com?subject=Missed%20calls">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
+      Email me
+    </a>
+  </div>
+</div>
+
 <header>
   <div class="wrap">
-    <div class="who">
+    <div class="meta rise">
       <div>
-        <div class="name">Sunyan Ali</div>
-        <div class="where">Gujranwala, Pakistan &middot; works remote</div>
+        <div class="w">Gujranwala, Pakistan &middot; works remote</div>
       </div>
     </div>
 
-    <h1>I build phone lines that answer when you can&rsquo;t.</h1>
+    <h1 class="rise">I build phone lines that answer when you can&rsquo;t.</h1>
 
-    <p class="intro">If a customer rings and gets voicemail, most of them hang up and call the next business on the list. I set up something that picks up instead, asks the right questions, and puts the appointment straight into your calendar.</p>
+    <p class="lede rise">If a customer rings and gets voicemail, most of them hang up and call the next business on the list. I set up something that picks up instead, asks the right questions, and puts the appointment straight into your calendar.</p>
 
-    <a class="video" href="https://www.youtube.com/watch?v=qOGFytTx0FY" target="_blank" rel="noopener" aria-label="Play the demo on YouTube">
+    <a class="video glass rise" href="https://www.youtube.com/watch?v=qOGFytTx0FY" target="_blank" rel="noopener" aria-label="Play the demo on YouTube">
       <img src="https://i.ytimg.com/vi/qOGFytTx0FY/maxresdefault.jpg" alt="Still from the demo call" onerror="this.style.display='none'">
-      <span class="play" aria-hidden="true"></span>
+      <span class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
     </a>
-    <p class="cap">Hear it take a call &mdash; opens on YouTube.</p>
+    <p class="cap rise">Hear it take a call &mdash; opens on YouTube.</p>
   </div>
 </header>
 
 <section>
   <div class="wrap">
-    <h2>What actually happens</h2>
+    <h2 class="rise">What actually happens</h2>
+    <div class="cards">
 
-    <div class="step">
-      <h3>Someone calls your number</h3>
-      <p>It answers on the first ring. Nine at night, Sunday morning, while you&rsquo;re on a job. It doesn&rsquo;t matter.</p>
-    </div>
+      <div class="card glass rise">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+        <h3>Someone calls your number</h3>
+        <p>It answers on the first ring. Nine at night, Sunday morning, while you&rsquo;re on a job. It doesn&rsquo;t matter.</p>
+      </div>
 
-    <div class="step">
-      <h3>It asks what they need</h3>
-      <p>Name, number, what the job is, when suits them. The same questions your receptionist would ask, in the same order.</p>
-    </div>
+      <div class="card glass rise">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg></div>
+        <h3>It asks what they need</h3>
+        <p>Name, number, what the job is, when suits them. The same questions your receptionist would ask, in the same order.</p>
+      </div>
 
-    <div class="step">
-      <h3>It books them in</h3>
-      <p>The appointment lands in your calendar with their details attached. You get a message telling you what was agreed.</p>
-    </div>
+      <div class="card glass rise">
+        <div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/><path d="m9 15.5 2 2 4-4"/></svg></div>
+        <h3>It books them in</h3>
+        <p>The appointment lands in your calendar with their details attached. You get a message telling you what was agreed.</p>
+      </div>
 
-    <div class="step">
-      <h3>If it can&rsquo;t help, it hands over</h3>
-      <p>Anything unusual, urgent, or outside what it knows goes to a person. It is built to stop rather than guess.</p>
+      <div class="card glass rise">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M17 11h6m0 0-2.5-2.5M23 11l-2.5 2.5"/></svg></div>
+        <h3>If it can&rsquo;t help, it hands over</h3>
+        <p>Anything unusual, urgent, or outside what it knows goes to a person. It is built to stop rather than guess.</p>
+      </div>
+
     </div>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <h2>What it costs to run</h2>
-    <p>The calls themselves cost about ten cents a minute. A booking call usually runs two or three minutes, so somewhere around a quarter per call.</p>
-    <p>That is what you pay the phone and software providers, not what you pay me. I would rather you see that number up front than find it in month two.</p>
+    <h2 class="rise">What it costs to run</h2>
+    <div class="panel glass rise">
+      <p>The calls themselves cost about <b>ten cents a minute</b>. A booking call usually runs two or three minutes, so somewhere around a quarter per call.</p>
+      <p>That is what you pay the phone and software providers, not what you pay me. I would rather you see that number up front than find it in month two.</p>
+    </div>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <h2>About me</h2>
-    <p>I&rsquo;m Sunyan. Computer science degree with an AI specialisation, and I work on this full time from Pakistan.</p>
-    <p>I have built one of these and run it in production. It takes a live call, asks the questions and writes the appointment into a dashboard. That is the video above.</p>
-    <p>What I don&rsquo;t have is a long client list or a page of company logos. I am early in this. You should know that before we talk, not after.</p>
+    <h2 class="rise">About me</h2>
+    <div class="panel glass rise">
+      <p>I&rsquo;m Sunyan. Computer science degree with an AI specialisation, and I work on this full time from Pakistan.</p>
+      <p>I have built one of these and run it in production. It takes a live call, asks the questions and writes the appointment into a dashboard. That is the video above.</p>
+      <p>What I don&rsquo;t have is a long client list or a page of company logos. I am early in this. You should know that before we talk, not after.</p>
+    </div>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <h2>Where to start</h2>
-    <div class="note">
+    <h2 class="rise">Where to start</h2>
+    <div class="panel glass rise">
       <p>Tell me roughly <b>how many calls you miss in a week</b> and what a booking is worth to you. That is usually enough for me to say whether this is worth your time, including when it isn&rsquo;t.</p>
       <p>If it is, I&rsquo;ll build a small working version for your business at no charge. You keep it either way. We talk about money after you have heard it answer your phone, not before.</p>
+      <div class="cta">
+        <a class="pill" href="mailto:sunyanali566@gmail.com?subject=Missed%20calls">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
+          Email me
+        </a>
+        <a class="mail" href="mailto:sunyanali566@gmail.com">sunyanali566@gmail.com</a>
+      </div>
     </div>
-    <p style="margin-top:26px"><a class="btn" href="mailto:sunyanali566@gmail.com?subject=Missed%20calls">Email me</a></p>
-    <p class="mail"><a href="mailto:sunyanali566@gmail.com">sunyanali566@gmail.com</a></p>
   </div>
 </section>
 
@@ -160,6 +264,34 @@ footer a{color:var(--soft)}
     Sunyan Ali &middot; AI phone agents &middot; Gujranwala, Pakistan &middot; <a href="https://github.com/SunyanAli">github.com/SunyanAli</a>
   </div>
 </footer>
+
+<script>
+// specular highlight follows the pointer across each glass surface
+document.querySelectorAll('.glass').forEach(function(el){
+  el.addEventListener('pointermove', function(e){
+    var r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+    el.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+  });
+});
+
+// reveal on scroll
+var items = document.querySelectorAll('.rise');
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en, i){
+      if (en.isIntersecting) {
+        en.target.style.transitionDelay = (Math.min(i,4) * 60) + 'ms';
+        en.target.classList.add('in');
+        io.unobserve(en.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  items.forEach(function(el){ io.observe(el); });
+} else {
+  items.forEach(function(el){ el.classList.add('in'); });
+}
+</script>
 
 </body>
 </html>
