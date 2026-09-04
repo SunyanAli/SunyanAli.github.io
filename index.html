@@ -7,13 +7,12 @@
 <meta name="description" content="I set up a phone line that answers when you can't, asks the right questions, and books the appointment into your calendar.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#15161a;
   --soft:#535861;
   --faint:#7f838c;
-  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
   --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   --r:22px;
   --shell:1000px;
@@ -91,7 +90,7 @@ body{
 /* ---------- sticky bar ---------- */
 .bar{position:sticky;top:14px;z-index:30;max-width:var(--shell);margin:14px auto 0;padding:0 clamp(20px,5vw,48px)}
 .bar-in{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 8px 8px 20px;border-radius:999px}
-.bar .nm{font-weight:600;font-size:15px}
+.bar .nm{font-weight:600;font-size:15px;letter-spacing:-.02em}
 .pill{
   display:inline-flex;align-items:center;gap:7px;position:relative;z-index:4;
   background:var(--ink);color:#fff;text-decoration:none;
@@ -108,9 +107,9 @@ header{padding:60px 0 4px}
 .meta{display:flex;align-items:center;gap:13px;margin-bottom:18px}
 .meta img{width:46px;height:46px;border-radius:50%;object-fit:cover;box-shadow:0 4px 14px -6px rgba(20,22,28,.55),0 0 0 1px rgba(255,255,255,.8)}
 .meta .w{font-size:13.5px;color:var(--faint);letter-spacing:.01em}
-h1{font-family:var(--serif);font-weight:400;font-size:clamp(38px,6.4vw,62px);
-   line-height:1.04;letter-spacing:-.022em;margin:0 0 22px;max-width:17ch}
-.lede{font-size:19px;color:var(--soft);margin:0 0 32px;max-width:54ch}
+h1{font-weight:700;font-size:clamp(36px,5.8vw,58px);line-height:1.045;
+   letter-spacing:-.042em;margin:0 0 22px;max-width:19ch}
+.lede{font-size:19px;color:var(--soft);margin:0 0 32px;max-width:54ch;letter-spacing:-.012em}
 
 /* ---------- video ---------- */
 .video{display:block;aspect-ratio:16/9;background:#1b1d22;max-width:760px;cursor:pointer}
@@ -130,8 +129,7 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(38px,6.4vw,62px);
 
 /* ---------- sections ---------- */
 section{padding:56px 0 0}
-h2{font-family:var(--serif);font-weight:400;font-size:clamp(26px,3.2vw,33px);
-   letter-spacing:-.018em;margin:0 0 22px}
+h2{font-weight:700;font-size:clamp(24px,2.8vw,31px);letter-spacing:-.034em;margin:0 0 22px}
 p{margin:0 0 16px}p:last-child{margin-bottom:0}
 
 .cards{display:grid;gap:14px}
@@ -143,7 +141,7 @@ p{margin:0 0 16px}p:last-child{margin-bottom:0}
   background:linear-gradient(150deg,rgba(255,255,255,.85),rgba(255,255,255,.5));
   box-shadow:0 0 0 1px rgba(255,255,255,.75) inset,0 3px 9px -5px rgba(20,22,28,.45)}
 .ico svg{width:19px;height:19px;stroke:var(--ink);stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.card h3{font-size:16px;font-weight:600;margin:0 0 5px;letter-spacing:-.012em}
+.card h3{font-size:16.5px;font-weight:600;margin:0 0 5px;letter-spacing:-.021em}
 .card p{font-size:15px;color:var(--soft);margin:0}
 
 .panel{padding:30px;max-width:74ch}
