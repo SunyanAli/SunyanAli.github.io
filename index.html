@@ -73,7 +73,7 @@ body{
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
           mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;mask-composite:exclude;
-  opacity:calc(.42 + var(--on,0) * .58);
+  opacity:calc(.46 + var(--on,0) * .54);
   pointer-events:none;
 }
 /* the lens: a tight specular core riding a wide soft wash */
@@ -271,56 +271,100 @@ footer a{color:var(--faint)}
 <script>
 (function(){
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fine   = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var els = [].slice.call(document.querySelectorAll('.glass'));
+  els.forEach(function(el){ el._q = { x:50, y:50, tx:50, ty:50, on:0, ton:0 }; });
 
-  if (!reduce && window.PointerEvent) {
-    var live = 0, running = false;
+  var running = false;
+  function start(){ if(!running){ running = true; requestAnimationFrame(tick); } }
 
+  function tick(){
+    var busy = false;
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i], q = el._q;
+      // the gap between drawn (x) and target (tx) is what reads as liquid
+      q.x  += (q.tx  - q.x)  * 0.14;
+      q.y  += (q.ty  - q.y)  * 0.14;
+      q.on += (q.ton - q.on) * 0.09;
+
+      if (q.on > 0.004 || Math.abs(q.tx - q.x) > 0.05) {
+        busy = true;
+        el.style.setProperty('--mx', q.x.toFixed(2) + '%');
+        el.style.setProperty('--my', q.y.toFixed(2) + '%');
+        el.style.setProperty('--on', q.on.toFixed(3));
+        el.style.setProperty('--ang',
+          (Math.atan2(q.y - 50, q.x - 50) * 180 / Math.PI + 90).toFixed(1) + 'deg');
+      } else if (q.on !== 0) {
+        q.on = 0; el.style.setProperty('--on','0');
+      }
+    }
+    if (busy) { requestAnimationFrame(tick); } else { running = false; }
+  }
+
+  if (!reduce && fine && window.PointerEvent) {
+    // --- desktop: the light follows the cursor, with lag ---
     els.forEach(function(el){
-      // x/y are what is drawn; tx/ty are where the pointer is. The gap is the liquid.
-      el._q = { x:50, y:50, tx:50, ty:50, on:0, ton:0 };
-
       el.addEventListener('pointerenter', function(e){
         var r = el.getBoundingClientRect(), q = el._q;
         q.tx = q.x = (e.clientX - r.left) / r.width * 100;
-        q.ty = q.y = (e.clientY - r.top) / r.height * 100;
-        q.ton = 1; live++; start();
+        q.ty = q.y = (e.clientY - r.top)  / r.height * 100;
+        q.ton = 1; start();
       });
       el.addEventListener('pointermove', function(e){
         var r = el.getBoundingClientRect(), q = el._q;
         q.tx = (e.clientX - r.left) / r.width * 100;
-        q.ty = (e.clientY - r.top) / r.height * 100;
+        q.ty = (e.clientY - r.top)  / r.height * 100;
       });
-      el.addEventListener('pointerleave', function(){
-        el._q.ton = 0;
-      });
+      el.addEventListener('pointerleave', function(){ el._q.ton = 0; });
     });
 
-    function start(){ if(!running){ running = true; requestAnimationFrame(tick); } }
+  } else if (!reduce) {
+    // --- touch: no cursor, so the light is driven by scroll and by tilt ---
+    var tiltX = 50, ticking = false;
 
-    function tick(){
-      var busy = false;
+    function sweep(){
+      ticking = false;
+      var vh = window.innerHeight;
       for (var i = 0; i < els.length; i++) {
-        var el = els[i], q = el._q;
-        // critically-damped follow: the highlight trails the pointer, then settles
-        q.x  += (q.tx  - q.x)  * 0.14;
-        q.y  += (q.ty  - q.y)  * 0.14;
-        q.on += (q.ton - q.on) * 0.09;
-
-        if (q.on > 0.004) {
-          busy = true;
-          el.style.setProperty('--mx', q.x.toFixed(2) + '%');
-          el.style.setProperty('--my', q.y.toFixed(2) + '%');
-          el.style.setProperty('--on', q.on.toFixed(3));
-          // rim brightens on the edge nearest the pointer
-          el.style.setProperty('--ang',
-            (Math.atan2(q.y - 50, q.x - 50) * 180 / Math.PI + 90).toFixed(1) + 'deg');
-        } else if (q.on !== 0) {
-          q.on = 0; el.style.setProperty('--on', '0');
-        }
+        var el = els[i], q = el._q, r = el.getBoundingClientRect();
+        if (r.bottom < -60 || r.top > vh + 60) { q.ton = 0; continue; }
+        q.ton = 1;
+        // as the panel travels up the screen the highlight slides down its face
+        var p = (vh * 0.5 - r.top) / (r.height + vh);      // 0 -> 1 through the viewport
+        q.ty = Math.max(-10, Math.min(110, p * 150 - 20));
+        q.tx = tiltX;
       }
-      if (busy) { requestAnimationFrame(tick); } else { running = false; }
+      start();
     }
+    window.addEventListener('scroll', function(){
+      if (!ticking) { ticking = true; requestAnimationFrame(sweep); }
+    }, { passive: true });
+    window.addEventListener('resize', sweep, { passive: true });
+
+    // tilt the phone and the specular slides sideways, like a real surface
+    window.addEventListener('deviceorientation', function(e){
+      if (e.gamma == null) return;
+      tiltX = Math.max(0, Math.min(100, 50 + e.gamma * 1.6));
+    });
+
+    // touching a panel puts the light under your finger
+    els.forEach(function(el){
+      el.addEventListener('touchstart', function(e){
+        var t = e.touches[0]; if (!t) return;
+        var r = el.getBoundingClientRect(), q = el._q;
+        q.tx = (t.clientX - r.left) / r.width * 100;
+        q.ty = (t.clientY - r.top)  / r.height * 100;
+        q.ton = 1; start();
+      }, { passive: true });
+      el.addEventListener('touchmove', function(e){
+        var t = e.touches[0]; if (!t) return;
+        var r = el.getBoundingClientRect(), q = el._q;
+        q.tx = (t.clientX - r.left) / r.width * 100;
+        q.ty = (t.clientY - r.top)  / r.height * 100;
+      }, { passive: true });
+    });
+
+    sweep();
   }
 
   var items = document.querySelectorAll('.rise');
